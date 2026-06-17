@@ -26,8 +26,11 @@ is only a compile-correctness check.
 
 ## Architecture
 
-Everything lives in a single package, `traefik_query_to_header` (package name uses underscores
-because the module path `query-to-header` is not a valid Go identifier):
+Everything lives in a single package, `query_to_header`. The package name must exactly match
+the import path's last segment with hyphens converted to underscores
+(`query-to-header` → `query_to_header`) — Traefik's Yaegi-based plugin loader derives the
+import alias from the path and fails with `undefined: query_to_header` if the declared package
+name doesn't match.
 
 - **`query_to_header.go`** — the entire plugin:
   - `Config` / `Mapping` — JSON-tagged structs populated by Traefik from the dynamic

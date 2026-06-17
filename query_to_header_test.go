@@ -1,4 +1,4 @@
-package traefik_query_to_header_test
+package query_to_header_test
 
 import (
 	"context"
@@ -6,31 +6,31 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	traefik_query_to_header "github.com/muench-dev/query-to-header"
+	"github.com/muench-dev/query-to-header"
 )
 
 func TestNew_RejectsNilConfig(t *testing.T) {
 	next := http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {})
 
-	if _, err := traefik_query_to_header.New(context.Background(), next, nil, "test"); err == nil {
+	if _, err := query_to_header.New(context.Background(), next, nil, "test"); err == nil {
 		t.Fatal("expected an error for a nil config, got none")
 	}
 }
 
 func TestNew_RejectsIncompleteMapping(t *testing.T) {
 	next := http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {})
-	cfg := &traefik_query_to_header.Config{
-		Mappings: []traefik_query_to_header.Mapping{{Query: "token"}},
+	cfg := &query_to_header.Config{
+		Mappings: []query_to_header.Mapping{{Query: "token"}},
 	}
 
-	if _, err := traefik_query_to_header.New(context.Background(), next, cfg, "test"); err == nil {
+	if _, err := query_to_header.New(context.Background(), next, cfg, "test"); err == nil {
 		t.Fatal("expected an error for a mapping missing a header name, got none")
 	}
 }
 
 func TestServeHTTP_SetsHeaderFromQuery(t *testing.T) {
-	cfg := &traefik_query_to_header.Config{
-		Mappings: []traefik_query_to_header.Mapping{
+	cfg := &query_to_header.Config{
+		Mappings: []query_to_header.Mapping{
 			{Query: "token", Header: "X-Token"},
 		},
 	}
@@ -40,7 +40,7 @@ func TestServeHTTP_SetsHeaderFromQuery(t *testing.T) {
 		gotHeader = req.Header.Get("X-Token")
 	})
 
-	handler, err := traefik_query_to_header.New(context.Background(), next, cfg, "test")
+	handler, err := query_to_header.New(context.Background(), next, cfg, "test")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -56,8 +56,8 @@ func TestServeHTTP_SetsHeaderFromQuery(t *testing.T) {
 }
 
 func TestServeHTTP_PrefixesValueWithBearer(t *testing.T) {
-	cfg := &traefik_query_to_header.Config{
-		Mappings: []traefik_query_to_header.Mapping{
+	cfg := &query_to_header.Config{
+		Mappings: []query_to_header.Mapping{
 			{Query: "token", Header: "Authorization", Bearer: true},
 		},
 	}
@@ -67,7 +67,7 @@ func TestServeHTTP_PrefixesValueWithBearer(t *testing.T) {
 		gotHeader = req.Header.Get("Authorization")
 	})
 
-	handler, err := traefik_query_to_header.New(context.Background(), next, cfg, "test")
+	handler, err := query_to_header.New(context.Background(), next, cfg, "test")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -83,8 +83,8 @@ func TestServeHTTP_PrefixesValueWithBearer(t *testing.T) {
 }
 
 func TestServeHTTP_DoesNotOverwriteExistingHeaderByDefault(t *testing.T) {
-	cfg := &traefik_query_to_header.Config{
-		Mappings: []traefik_query_to_header.Mapping{
+	cfg := &query_to_header.Config{
+		Mappings: []query_to_header.Mapping{
 			{Query: "token", Header: "X-Token"},
 		},
 	}
@@ -94,7 +94,7 @@ func TestServeHTTP_DoesNotOverwriteExistingHeaderByDefault(t *testing.T) {
 		gotHeader = req.Header.Get("X-Token")
 	})
 
-	handler, err := traefik_query_to_header.New(context.Background(), next, cfg, "test")
+	handler, err := query_to_header.New(context.Background(), next, cfg, "test")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -111,8 +111,8 @@ func TestServeHTTP_DoesNotOverwriteExistingHeaderByDefault(t *testing.T) {
 }
 
 func TestServeHTTP_RemovesQueryParamWhenConfigured(t *testing.T) {
-	cfg := &traefik_query_to_header.Config{
-		Mappings: []traefik_query_to_header.Mapping{
+	cfg := &query_to_header.Config{
+		Mappings: []query_to_header.Mapping{
 			{Query: "token", Header: "X-Token", Remove: true},
 		},
 	}
@@ -122,7 +122,7 @@ func TestServeHTTP_RemovesQueryParamWhenConfigured(t *testing.T) {
 		gotQuery = req.URL.RawQuery
 	})
 
-	handler, err := traefik_query_to_header.New(context.Background(), next, cfg, "test")
+	handler, err := query_to_header.New(context.Background(), next, cfg, "test")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}

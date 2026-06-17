@@ -1,7 +1,7 @@
-// Package traefik_query_to_header is a Traefik middleware plugin that
+// Package query_to_header is a Traefik middleware plugin that
 // copies values from incoming request query parameters into HTTP request
 // headers before the request reaches the next handler in the chain.
-package traefik_query_to_header
+package query_to_header
 
 import (
 	"context"
