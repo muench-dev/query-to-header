@@ -1,0 +1,56 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## What this is
+
+A Traefik middleware plugin (`github.com/muench-dev/query-to-header`) that copies values from
+incoming HTTP request query parameters into HTTP request headers before the request reaches
+the next handler in the chain. Traefik plugins are not run as compiled binaries in production —
+they are interpreted by [Yaegi](https://github.com/traefik/yaegi) inside Traefik itself, which
+constrains the code to the Go standard library only (no third-party dependencies).
+
+## Commands
+
+```bash
+go test -v -cover ./...   # run all tests with coverage
+go test -run TestName ./... -v  # run a single test
+go build ./...             # sanity-compile (plugin is never shipped as a binary)
+go vet ./...
+golangci-lint run          # lint (config in .golangci.yml)
+just                        # default recipe: lists all available recipes
+```
+
+There is no `main` package and nothing is ever executed as a standalone program — `go build`
+is only a compile-correctness check.
+
+## Architecture
+
+Everything lives in a single package, `traefik_query_to_header` (package name uses underscores
+because the module path `query-to-header` is not a valid Go identifier):
+
+- **`query_to_header.go`** — the entire plugin:
+  - `Config` / `Mapping` — JSON-tagged structs populated by Traefik from the dynamic
+    configuration (`mappings: [{query, header, remove, overwrite, bearer}]`).
+  - `CreateConfig()` — required by the Traefik plugin contract; returns the default config.
+  - `New(ctx, next, config, name)` — required factory signature Traefik calls to construct the
+    middleware. Validates that every mapping has both `query` and `header` set, then returns a
+    `*QueryToHeader` wrapping `next`.
+  - `(*QueryToHeader).ServeHTTP` — the request path: for each configured mapping, reads the
+    query parameter, optionally prefixes the value with `Bearer ` (`Bearer`), sets the header
+    (skipping if already present unless `Overwrite` is true), optionally strips the query
+    parameter (`Remove`), rewrites `req.URL.RawQuery`, then calls `next.ServeHTTP`.
+- **`query_to_header_test.go`** — table-style tests built around `httptest.NewRequest` /
+  `httptest.NewRecorder`, asserting on header/query state observed inside a stub `next` handler.
+- **`.traefik.yaml`** — the plugin manifest required by the Traefik Plugin Catalog
+  (`displayName`, `type: middleware`, `import`, `summary`, `testData` used to validate the
+  catalog example config matches `Config`'s JSON shape).
+
+## Conventions to preserve
+
+- Keep `New` and `CreateConfig` signatures exact — Traefik's plugin loader calls them by
+  reflection-free convention; changing the signature breaks plugin loading.
+- No external dependencies in `go.mod` — Yaegi's plugin sandbox only reliably supports the
+  standard library for this kind of plugin.
+- Mapping validation (non-empty `query`/`header`) happens in `New`, not in `ServeHTTP`, so
+  invalid configs fail fast at middleware construction time.
