@@ -129,6 +129,7 @@ middleware to fail to load (validated in `New`, at construction time, not per-re
 | `go.mod`                       | No third-party dependencies — required for Yaegi compatibility.     |
 | `.golangci.yml`                | Lint configuration.                                                  |
 | `justfile`                     | `lint`, `test`, `vendor`, `clean` recipes (run with [`just`](https://just.systems)). |
+| `.release-it.json`             | Config for [`release-it`](https://github.com/release-it/release-it) (must be installed globally). |
 
 ## Local development
 
@@ -149,6 +150,21 @@ just                         # default recipe: lists all available recipes
 3. Start Traefik and confirm the plugin loads without errors in the logs.
 4. Attach the middleware to a router and send a request with the configured query parameter
    to confirm the header is set on the upstream request.
+
+## Releasing
+
+Releases are tag-driven. [`release-it`](https://github.com/release-it/release-it) (install it
+globally, e.g. `brew install release-it` or `npm install -g release-it`) is used locally to
+bump the version, commit, create the `vX.Y.Z` tag, and push it:
+
+```bash
+release-it           # interactively pick the version bump
+release-it patch      # or specify the bump directly
+```
+
+`release-it` only creates and pushes the git tag — it does not publish to npm or create a
+GitHub Release itself (see `.release-it.json`). Pushing the tag triggers the `release` GitHub
+Actions workflow, which runs `goreleaser` to publish the actual GitHub Release.
 
 ## Constraints
 

@@ -46,6 +46,14 @@ because the module path `query-to-header` is not a valid Go identifier):
   (`displayName`, `type: middleware`, `import`, `summary`, `testData` used to validate the
   catalog example config matches `Config`'s JSON shape).
 
+## Releasing
+
+`.release-it.json` configures [`release-it`](https://github.com/release-it/release-it) (a
+globally installed CLI, not a project dependency — there is no `package.json`) to only bump
+the version, commit, tag, and push (`github.release: false`, `npm.publish: false`). Pushing the
+resulting `vX.Y.Z` tag triggers `.github/workflows/release.yml`, which runs `goreleaser` to
+actually publish the GitHub Release.
+
 ## Conventions to preserve
 
 - Keep `New` and `CreateConfig` signatures exact — Traefik's plugin loader calls them by
