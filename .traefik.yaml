@@ -1,0 +1,10 @@
+displayName: Query To Header
+type: middleware
+import: github.com/muench-dev/query-to-header
+summary: Transforms HTTP request query parameters into request headers.
+testData:
+  mappings:
+    - query: token
+      header: Authorization
+      remove: true
+      bearer: true
