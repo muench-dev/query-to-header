@@ -1,0 +1,9 @@
+version: 2
+
+builds:
+  - skip: true
+
+release:
+  github:
+    owner: muench-dev
+    name: query-to-header
