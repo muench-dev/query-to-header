@@ -125,7 +125,7 @@ middleware to fail to load (validated in `New`, at construction time, not per-re
 |--------------------------------|----------------------------------------------------------------------|
 | `query_to_header.go`          | Plugin implementation: `Config`, `CreateConfig`, `New`, `ServeHTTP`. |
 | `query_to_header_test.go`     | Unit tests using `httptest`.                                        |
-| `.traefik.yaml`                | Plugin manifest required by the Traefik Plugin Catalog.             |
+| `.traefik.yml`                | Plugin manifest required by the Traefik Plugin Catalog.             |
 | `go.mod`                       | No third-party dependencies — required for Yaegi compatibility.     |
 | `.golangci.yml`                | Lint configuration.                                                  |
 | `justfile`                     | `lint`, `test`, `vendor`, `clean` recipes (run with [`just`](https://just.systems)). |

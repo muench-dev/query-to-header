@@ -42,7 +42,7 @@ because the module path `query-to-header` is not a valid Go identifier):
     parameter (`Remove`), rewrites `req.URL.RawQuery`, then calls `next.ServeHTTP`.
 - **`query_to_header_test.go`** — table-style tests built around `httptest.NewRequest` /
   `httptest.NewRecorder`, asserting on header/query state observed inside a stub `next` handler.
-- **`.traefik.yaml`** — the plugin manifest required by the Traefik Plugin Catalog
+- **`.traefik.yml`** — the plugin manifest required by the Traefik Plugin Catalog
   (`displayName`, `type: middleware`, `import`, `summary`, `testData` used to validate the
   catalog example config matches `Config`'s JSON shape).
 
@@ -53,6 +53,23 @@ globally installed CLI, not a project dependency — there is no `package.json`)
 the version, commit, tag, and push (`github.release: false`, `npm.publish: false`). Pushing the
 resulting `vX.Y.Z` tag triggers `.github/workflows/release.yml`, which runs `goreleaser` to
 actually publish the GitHub Release.
+
+## Traefik Plugin Catalog requirements
+
+The catalog (https://plugins.traefik.io) polls GitHub daily and imports repositories that meet
+all of these criteria — breaking any of them silently stops catalog updates:
+
+- Repository must not be a fork.
+- The `traefik-plugin` topic must be set on the GitHub repository.
+- `.traefik.yml` must exist at repo root with a valid `testData` property matching `Config`'s
+  JSON shape.
+- A valid `go.mod` must exist at repo root.
+- The plugin must be versioned via git tag (source is pulled from the Go module proxy, not a
+  branch).
+- Any package dependencies must be vendored and committed — moot here since this plugin has none.
+
+If the catalog's import fails, it opens an issue on this repo explaining the problem and pauses
+re-import attempts until that issue is closed.
 
 ## Conventions to preserve
 
