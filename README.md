@@ -4,6 +4,7 @@
 [![Go CI](https://github.com/muench-dev/query-to-header/actions/workflows/go.yml/badge.svg)](https://github.com/muench-dev/query-to-header/actions/workflows/go.yml)
 [![CodeQL](https://github.com/muench-dev/query-to-header/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/muench-dev/query-to-header/actions/workflows/codeql-analysis.yml)
 [![Go Report Card](https://goreportcard.com/badge/github.com/muench-dev/query-to-header)](https://goreportcard.com/report/github.com/muench-dev/query-to-header)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
 A [Traefik](https://traefik.io) middleware plugin that copies values from incoming HTTP
 request query parameters into HTTP request headers before the request reaches the next
