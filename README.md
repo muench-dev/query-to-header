@@ -1,5 +1,10 @@
 # Query To Header
 
+[![Maintenance](https://img.shields.io/maintenance/yes/2026.svg)](https://github.com/muench-dev/query-to-header)
+[![Go CI](https://github.com/muench-dev/query-to-header/actions/workflows/go.yml/badge.svg)](https://github.com/muench-dev/query-to-header/actions/workflows/go.yml)
+[![CodeQL](https://github.com/muench-dev/query-to-header/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/muench-dev/query-to-header/actions/workflows/codeql-analysis.yml)
+[![Go Report Card](https://goreportcard.com/badge/github.com/muench-dev/query-to-header)](https://goreportcard.com/report/github.com/muench-dev/query-to-header)
+
 A [Traefik](https://traefik.io) middleware plugin that copies values from incoming HTTP
 request query parameters into HTTP request headers before the request reaches the next
 handler in the chain.
